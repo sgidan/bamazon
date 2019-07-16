@@ -53,12 +53,10 @@ function afterConnection() {
                     if (custReqUnit > currentSQ) {
                         console.log("Insufficient Quantity!")
                     }
-
                 });
                 connection.end();
             });
     });
 }
-
 
 
