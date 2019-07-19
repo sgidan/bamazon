@@ -52,11 +52,34 @@ function afterConnection() {
                     console.log(currentSQ)
                     if (custReqUnit > currentSQ) {
                         console.log("Insufficient Quantity!")
+                        //if there IS enough
                     }
+                    else {
+                        var stockLeft = parseInt(currentSQ) - parseInt(custReqUnit)
+                        updateProduct(stockLeft, custReqId);
+                    };
                 });
-                connection.end();
             });
     });
 }
 
+function updateProduct(stockLeft, custReqId) {
+    console.log("Filling your order!\n Updating stock quantity...\n");
 
+    console.log("---------------------------")
+    console.log(stockLeft)
+    var query = connection.query("UPDATE products SET ? WHERE ?",
+        [{ stock_quantity: stockLeft },
+        { item_id: custReqId }
+        ],
+        function (err, res) {
+            if (err) throw err;
+            console.log(res.affectedRows + " products updated!\n");
+            // Call deleteProduct AFTER the UPDATE completes
+            // deleteProduct();
+        });
+
+    // logs the actual query being run
+    console.log(query.sql);
+    connection.end();
+}
