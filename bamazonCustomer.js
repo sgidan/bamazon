@@ -45,9 +45,10 @@ function afterConnection() {
                 var custReqUnit = inquirerResponse.request_units;
                 var custReqId = inquirerResponse.request_id;
 
-                connection.query("SELECT stock_quantity FROM products WHERE item_id=?", [custReqId], function (err, res) {
+                connection.query("SELECT * FROM products WHERE item_id=?", [custReqId], function (err, res) {
                     if (err) throw err;
                     var currentSQ = res[0].stock_quantity;
+                    var price = res[0].price;
                     console.log(custReqUnit)
                     console.log(currentSQ)
                     if (custReqUnit > currentSQ) {
@@ -57,6 +58,9 @@ function afterConnection() {
                     else {
                         var stockLeft = parseInt(currentSQ) - parseInt(custReqUnit)
                         updateProduct(stockLeft, custReqId);
+                        // console.log(price, custReqUnit)
+                        total(price, custReqUnit);
+                        connection.end();
                     };
                 });
             });
@@ -75,11 +79,15 @@ function updateProduct(stockLeft, custReqId) {
         function (err, res) {
             if (err) throw err;
             console.log(res.affectedRows + " products updated!\n");
-            // Call deleteProduct AFTER the UPDATE completes
-            // deleteProduct();
         });
 
-    // logs the actual query being run
     console.log(query.sql);
-    connection.end();
+
+}
+function total(price, custReqUnit) {
+    totalCost = parseFloat(price) * parseFloat(custReqUnit);
+    console.log(totalCost)
+    console.log(price)
+    console.log("Your total: $" + totalCost)
+
 }
